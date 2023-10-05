@@ -102,7 +102,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
-<table>
+<!-- <table>
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/abdelhamidbakhta"><img src="https://avatars.githubusercontent.com/u/45264458?v=4?s=100" width="100px;" alt="Abdel @ StarkWare "/><br /><sub><b>Abdel @ StarkWare </b></sub></a><br /><a href="https://github.com/abdelhamidbakhta/token-vesting-contracts/commits?author=abdelhamidbakhta" title="Code">💻</a></td>
@@ -111,11 +111,11 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/owlen"><img src="https://avatars.githubusercontent.com/u/5638865?v=4?s=100" width="100px;" alt="Oren Gampel"/><br /><sub><b>Oren Gampel</b></sub></a><br /><a href="https://github.com/abdelhamidbakhta/token-vesting-contracts/commits?author=owlen" title="Code">💻</a></td>
     </tr>
   </tbody>
-</table>
+</table> -->
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+<!-- 
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome! -->
