@@ -52,7 +52,7 @@ module.exports = {
     }),
   },
   networks: {
-    mainnet: mainnetNetworkConfig(),
+    //mainnet: mainnetNetworkConfig(),
     goerli: goerliNetworkConfig(),
   },
   abiExporter: {
@@ -93,9 +93,9 @@ function mainnetNetworkConfig() {
 }
 
 function goerliNetworkConfig() {
-  let url = "https://goerli.infura.io/v3/";
+  let url = "https://goerli.infura.io/v3/5e382490498c4aad803e4c239fabdeed";
   let accountPrivateKey =
-    "0x0000000000000000000000000000000000000000000000000000000000000000";
+    "ffd77dc3ac8e9d44ffffe4efa3f482f36d6355db6e1cbefcd0256bda3b845485";
   if (process.env.GOERLI_ENDPOINT) {
     url = `${process.env.GOERLI_ENDPOINT}`;
   }
@@ -111,7 +111,7 @@ function goerliNetworkConfig() {
 }
 
 function getEtherscanApiKey() {
-  let apiKey = "";
+  let apiKey = "H5TC6WRGRPYXW8RG98RK8CH1RHHYUZEMJH";
   if (process.env.ETHERSCAN_API_KEY) {
     apiKey = `${process.env.ETHERSCAN_API_KEY}`;
   }

@@ -1,5 +1,4 @@
-// contracts/TokenVesting.sol
-// SPDX-License-Identifier: Apache-2.0
+ // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
 // OpenZeppelin dependencies
@@ -9,9 +8,11 @@ import {SafeTransferLib} from "solmate/utils/SafeTransferLib.sol";
 import {ReentrancyGuard} from "solmate/utils/ReentrancyGuard.sol";
 
 /**
- * @title TokenVesting
+ * @title MBLKVesting
  */
-contract TokenVesting is Owned, ReentrancyGuard {
+
+//MBLK
+contract MBLKVesting is Owned, ReentrancyGuard {
     struct VestingSchedule {
         // beneficiary of tokens after they are released
         address beneficiary;

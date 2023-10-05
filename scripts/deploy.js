@@ -5,17 +5,17 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const Token = await ethers.getContractFactory("Token");
-  const token = await Token.deploy(
-    "Test Token",
-    "TT",
-    "1000000000000000000000000"
-  );
+  //const Token = await ethers.getContractFactory("Token");
+  // const token = await Token.deploy(
+  //   "Test Token",
+  //   "TT",
+  //   "1000000000000000000000000"
+  // );
+const mblk_address = "0x16552399d27796eFC861a37bAcB7893eadd60643"
+  //console.log("Token address:", token.address);
 
-  console.log("Token address:", token.address);
-
-  const TokenVesting = await ethers.getContractFactory("TokenVesting");
-  const tokenVesting = await TokenVesting.deploy(token.address);
+  const TokenVesting = await ethers.getContractFactory("MBLKVesting");
+  const tokenVesting = await TokenVesting.deploy(mblk_address);
   console.log("TokenVesting address:", tokenVesting.address);
 }
 
