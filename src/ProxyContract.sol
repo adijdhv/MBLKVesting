@@ -2,8 +2,16 @@
 pragma solidity ^0.8.0;
 
 
+<<<<<<< HEAD
  
  
+=======
+
+
+import './AutoTransfer.sol';
+
+
+>>>>>>> db41d04272191e217f0406fbdb23f4d2880e641c
 interface StakingPoolInterface {
     function setFixedReward(uint256 _fixedReward) external;
     function setDynamicReward(uint256 _dynamicReward) external;
