@@ -2,10 +2,7 @@
 pragma solidity ^0.8.0;
 
 
-
-
-import './AutoTransfer.sol';
-import './FinalStakingPool_19_10_23.sol';
+ 
  
 interface StakingPoolInterface {
     function setFixedReward(uint256 _fixedReward) external;
@@ -13,38 +10,35 @@ interface StakingPoolInterface {
 }
 
 
-interface MBLKVesting {
+interface AutoTransferInterface {
     function TransferFixedReleasableAmount(address _beneficiaryAddress,) public ;
     function TransferDynamicAmount(address _beneficiaryAddress,uint256 _amount) public;
     function TransferFixedReleasableAmount(address _beneficiaryAddress,uint256 _index) public;
-  function computeReleasableAmount(bytes32 vestingScheduleId)externalviewonlyIfVestingScheduleNotRevoked(vestingScheduleId)returns (uint256);
- function computeVestingScheduleIdForAddressAndIndex(address holder,uint256 index ) public pure returns (bytes32) ;
+    function computeReleasableAmount(bytes32 vestingScheduleId)externalviewonlyIfVestingScheduleNotRevoked(vestingScheduleId)returns (uint256);
+    function computeVestingScheduleIdForAddressAndIndex(address holder,uint256 index ) public pure returns (bytes32) ;
     }
 
 
 
 contract Proxy {
     address public owner;
-    address public StakingPoolContract;
-    address public VestingContract;
+ 
 
-    AutoTransfer public autoTransfer;
+    AutoTransferInterface public AutoTransfer;
 
-    Condition public currentCondition;
-
-    enum Condition { UseStakingPool, UseVestingContract }
+    StakingPoolInterface public StakingPool;
+ 
 
     mapping(address => bool) public isAdmin;  
 
     uint256 FixedRewardAmountReleased;
     uint256 DynamicAmountReleased;
-    address _target;
-
+     
     constructor(address _StakingPoolContract, address _Vesting) {
         owner = msg.sender;
-        StakingPoolContract = _StakingPoolContract;
-        VestingContract = _Vesting;
-        currentCondition = Condition.UseVestingContract;
+        StakingPool = StakingPoolInterface(_StakingPoolContract);
+        AutoTransfer = AutoTransferInterface(_Vesting);
+        
     }
 
     modifier onlyOwner() {
@@ -52,36 +46,10 @@ contract Proxy {
         _;
     }
 
-    function toggleCondition() internal {
-        currentCondition = (currentCondition == Condition.UseStakingPool) ? Condition.UseVestingContract : Condition.UseStakingPool;
-    }
+  
 
-    fallback() external payable {
-        //   if (currentCondition == Condition.UseStakingPool) {
-        //     _target = StakingPoolContract;
-        // } else {
-        //     _target = VestingContract;
-        // }
-
-        _target = ( currentCondition == Condition.UseStakingPool ) ? StakingPoolContract:  VestingContract;
-
-
-        assembly {
-            let ptr := mload(0x40)
-            calldatacopy(ptr, 0, calldatasize())
-            let result := delegatecall(gas(), _target, ptr, calldatasize(), 0, 0)
-            let size := returndatasize()
-            returndatacopy(ptr, 0, size)
-
-            switch result
-            case 0 {
-                revert(ptr, size)
-            }
-            default {
-                return(ptr, size)
-            }
-        }
-    }
+  
+    
 
     function setStakingPoolContractAddress(address _newImpl) public onlyOwner {
         StakingPoolContract = _newImpl;
@@ -92,33 +60,33 @@ contract Proxy {
     }
 
      function setTotalRewards() public onlyAdmin {
-        require(currentCondition == Condition.UseStakingPool);
+        
 
-          StakingPoolInterface(StakingPoolContract).setFixedReward(FixedRewardAmountReleased);
+          StakingPool.setFixedReward(FixedRewardAmountReleased);
 
-          StakingPoolInterface(StakingPoolContract).setDynamicReward(DynamicAmountReleased);
-          toggleCondition();
+          StakingPool.setDynamicReward(DynamicAmountReleased);
+         
 
     }
 
      
     
     function ReleaseFunds( uint256 _dynamicRewardAmount, uint256 _index) public onlyAdmin {
-
-        require(currentCondition == Condition.UseVestingContract);
+ 
         
-        bytes32 vestingScheduleId = MBLKVesting(VestingContract).computeVestingScheduleIdForAddressAndIndex(StakingPoolContract, _index);
+        bytes32 vestingScheduleId = AutoTransfer.computeVestingScheduleIdForAddressAndIndex(StakingPoolContract, _index);
 
-        FixedRewardAmountReleased = MBLKVesting(VestingContract).computeReleasableAmount(vestingScheduleId);
+        FixedRewardAmountReleased = AutoTransfer.computeReleasableAmount(vestingScheduleId);
   
-        MBLKVesting(VestingContract).TransferFixedReleasableAmount(StakingPoolContract, _index);
+        FixedRewardAmountReleased = computeReleasableAmount(vestingScheduleId);
+
+        AutoTransfer.TransferFixedReleasableAmount(StakingPoolContract, _index);
 
         DynamicAmountReleased = _dynamicRewardAmount;
 
-        MBLKVesting(VestingContract).TransferDynamicAmount(StakingPoolContract, _dynamicRewardAmount);
+        AutoTransfer.TransferDynamicAmount(StakingPoolContract, _dynamicRewardAmount);
 
-        toggleCondition();
-
+ 
     }
 
     function addAdmin(address _newAdmin) public onlyOwner {
