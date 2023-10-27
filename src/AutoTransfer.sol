@@ -13,8 +13,8 @@ contract AutoTransfer is MBLKVesting {
     mapping(address => bool) public isAdmin;
 
     function TransferFixedReleasableAmount(
-        _beneficiaryAddress,
-        _index
+        address _beneficiaryAddress,
+        uint256 _index
     ) public onlyAdmin {
         bytes32 vestingScheduleId = getVestingScheduleByAddressAndIndex(
             _beneficiaryAddress,
@@ -50,8 +50,8 @@ contract AutoTransfer is MBLKVesting {
     }
 
     function TransferDynamicReleaseableAmount(
-        _beneficiaryAddress,
-        _amount
+        address _beneficiaryAddress,
+        uint256 _amount
     ) public onlyAdmin {
         bool isReleasor = (msg.sender == Admin);
         require(

@@ -2,16 +2,11 @@
 pragma solidity ^0.8.0;
 
 
-<<<<<<< HEAD
- 
- 
-=======
 
 
 import './AutoTransfer.sol';
 
 
->>>>>>> db41d04272191e217f0406fbdb23f4d2880e641c
 interface StakingPoolInterface {
     function setFixedReward(uint256 _fixedReward) external;
     function setDynamicReward(uint256 _dynamicReward) external;
@@ -99,12 +94,12 @@ contract Proxy {
 
     function addAdmin(address _newAdmin) public onlyOwner {
         isAdmin[_newAdmin] = true;
-        emit adminAdded( _newAdmin);
+        //emit adminAdded( _newAdmin);
     }
 
      function removeAdmin(address _adminAddress) public onlyOwner {
         isAdmin[_adminAddress] = false;
-        emit adminRemoved( _adminAddress);
+       // emit adminRemoved( _adminAddress);
     }
 
     modifier onlyAdmin() {
