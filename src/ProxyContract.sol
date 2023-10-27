@@ -2,11 +2,6 @@
 pragma solidity ^0.8.0;
 
 
-
-
-import './AutoTransfer.sol';
-
-
 interface StakingPoolInterface {
     function setFixedReward(uint256 _fixedReward) external;
     function setDynamicReward(uint256 _dynamicReward) external;
@@ -14,32 +9,41 @@ interface StakingPoolInterface {
 
 
 interface AutoTransferInterface {
-    function TransferFixedReleasableAmount(address _beneficiaryAddress,) public ;
-    function TransferDynamicAmount(address _beneficiaryAddress,uint256 _amount) public;
-    function TransferFixedReleasableAmount(address _beneficiaryAddress,uint256 _index) public;
-    function computeReleasableAmount(bytes32 vestingScheduleId)externalviewonlyIfVestingScheduleNotRevoked(vestingScheduleId)returns (uint256);
-    function computeVestingScheduleIdForAddressAndIndex(address holder,uint256 index ) public pure returns (bytes32) ;
-    }
 
+    function TransferFixedReleasableAmount(address _beneficiaryAddress, uint256 _indexNumber) external;
 
+    function TransferDynamicReleaseableAmount(address _beneficiaryAddress, uint256 _amount) external;
 
-contract Proxy {
+    function DepositTokensInFixedRewardPool(uint256 _amount) external;
+
+    function DepositTokensInDynamicRewardPool(uint256 _amount) external;
+    
+    function computeReleasableAmount(bytes32 vestingScheduleId) external view returns (uint256);
+    function computeVestingScheduleIdForAddressAndIndex(address holder, uint256 index) external pure returns (bytes32);
+
+    function addAdmin(address _newAdmin) external;
+}
+
+ 
+
+contract Proxy  {
     address public owner;
  
 
     AutoTransferInterface public AutoTransfer;
 
-    StakingPoolInterface public StakingPool;
+    StakingPoolInterface public StakingPoolContract;
  
 
     mapping(address => bool) public isAdmin;  
 
-    uint256 FixedRewardAmountReleased;
-    uint256 DynamicAmountReleased;
+    //uint256 FixedRewardAmountReleased;
+    //uint256 DynamicAmountReleased;
+    address stakingPoolContractAddress;
      
     constructor(address _StakingPoolContract, address _Vesting) {
         owner = msg.sender;
-        StakingPool = StakingPoolInterface(_StakingPoolContract);
+        StakingPoolContract = StakingPoolInterface(_StakingPoolContract);
         AutoTransfer = AutoTransferInterface(_Vesting);
         
     }
@@ -49,53 +53,43 @@ contract Proxy {
         _;
     }
 
-  
-
-  
-    
 
     function setStakingPoolContractAddress(address _newImpl) public onlyOwner {
-        StakingPoolContract = _newImpl;
+        StakingPoolContract = StakingPoolInterface(_newImpl);
+        stakingPoolContractAddress = _newImpl;
     }
 
-    function setVestingContractAddress(address _newImpl) public onlyOwner {
-        VestingContract = _newImpl;
-    }
-
-     function setTotalRewards() public onlyAdmin {
+    function setAutoTransferAddress(address _newImpl) public onlyOwner {
         
-
-          StakingPool.setFixedReward(FixedRewardAmountReleased);
-
-          StakingPool.setDynamicReward(DynamicAmountReleased);
-         
+         AutoTransfer = AutoTransferInterface(_newImpl);
 
     }
+
+
 
      
     
     function ReleaseFunds( uint256 _dynamicRewardAmount, uint256 _index) public onlyAdmin {
- 
         
-        bytes32 vestingScheduleId = AutoTransfer.computeVestingScheduleIdForAddressAndIndex(StakingPoolContract, _index);
+        bytes32 vestingScheduleId = AutoTransfer.computeVestingScheduleIdForAddressAndIndex(stakingPoolContractAddress,_index);
 
-        FixedRewardAmountReleased = AutoTransfer.computeReleasableAmount(vestingScheduleId);
-  
-        FixedRewardAmountReleased = computeReleasableAmount(vestingScheduleId);
+        uint256 FixedRewardAmountReleased = AutoTransfer.computeReleasableAmount(vestingScheduleId); 
 
-        AutoTransfer.TransferFixedReleasableAmount(StakingPoolContract, _index);
+        AutoTransfer.TransferFixedReleasableAmount(stakingPoolContractAddress, _index);
 
-        DynamicAmountReleased = _dynamicRewardAmount;
+        StakingPoolContract.setFixedReward(FixedRewardAmountReleased);
 
-        AutoTransfer.TransferDynamicAmount(StakingPoolContract, _dynamicRewardAmount);
+        uint256 DynamicAmountReleased = _dynamicRewardAmount;
 
+        AutoTransfer.TransferDynamicReleaseableAmount(stakingPoolContractAddress, _dynamicRewardAmount);
+
+        StakingPoolContract.setDynamicReward(DynamicAmountReleased); 
  
     }
 
     function addAdmin(address _newAdmin) public onlyOwner {
         isAdmin[_newAdmin] = true;
-        //emit adminAdded( _newAdmin);
-    }
+     }
 
      function removeAdmin(address _adminAddress) public onlyOwner {
         isAdmin[_adminAddress] = false;
