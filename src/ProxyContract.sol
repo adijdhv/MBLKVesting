@@ -43,6 +43,7 @@ contract Proxy  {
      
     constructor(address _StakingPoolContract, address _Vesting) {
         owner = msg.sender;
+        isAdmin[msg.sender] = true;
         StakingPoolContract = StakingPoolInterface(_StakingPoolContract);
         AutoTransfer = AutoTransferInterface(_Vesting);
         
